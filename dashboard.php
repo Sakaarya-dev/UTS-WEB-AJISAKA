@@ -21,13 +21,13 @@ if(!isset($_SESSION['user'])){
         }
 
         body{
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: #f4f4f4;
         }
 
         .navbar{
             background: #ff7e5f;
-            padding: 15px;
+            padding: 15px 30px;
             color: white;
             display: flex;
             justify-content: space-between;
@@ -35,16 +35,20 @@ if(!isset($_SESSION['user'])){
         }
 
         .navbar h2{
-            font-size: 22px;
+            font-size: 24px;
         }
 
         .logout{
             background: white;
             color: #ff7e5f;
-            padding: 8px 15px;
+            padding: 10px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
+        }
+
+        .logout:hover{
+            background: #f1f1f1;
         }
 
         .container{
@@ -55,15 +59,26 @@ if(!isset($_SESSION['user'])){
 
         .welcome{
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome h1{
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .welcome p{
+            color: #666;
         }
 
         .menu{
             display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+            grid-template-columns:
+            repeat(auto-fit,minmax(220px,1fr));
+
             gap: 20px;
         }
 
@@ -80,6 +95,11 @@ if(!isset($_SESSION['user'])){
             color: #333;
         }
 
+        .card p{
+            margin-bottom: 20px;
+            color: #666;
+        }
+
         .card a{
             display: inline-block;
             padding: 10px 20px;
@@ -91,6 +111,15 @@ if(!isset($_SESSION['user'])){
 
         .card a:hover{
             background: #eb5e3b;
+        }
+
+        @media(max-width: 768px){
+
+            .navbar{
+                flex-direction: column;
+                gap: 10px;
+            }
+
         }
 
     </style>
@@ -111,43 +140,59 @@ if(!isset($_SESSION['user'])){
 <div class="container">
 
     <div class="welcome">
+
         <h1>
             Selamat Datang,
             <?php echo $_SESSION['user']; ?>
         </h1>
 
         <p>
-            Sistem CRUD Toko Telur
+            Sistem CRUD Data Produk Toko Telur
         </p>
+
     </div>
 
     <div class="menu">
 
         <div class="card">
-            <h3>Tambah Data</h3>
+
+            <h3>Tambah Produk</h3>
+
+            <p>
+                Menambahkan produk telur baru
+            </p>
 
             <a href="tambah.php">
-                Masuk
+                Tambah
             </a>
+
         </div>
 
         <div class="card">
-            <h3>Data Telur</h3>
+
+            <h3>Data Produk</h3>
+
+            <p>
+                Melihat seluruh data produk
+            </p>
 
             <a href="data.php">
                 Lihat
             </a>
-        </div>
 
+        </div>
         <div class="card">
-            <h3>Kelola User</h3>
 
-            <a href="#">
-                Kelola
+            <h3>Data Transaksi</h3>
+
+             <p>
+                Melihat riwayat pembelian
+            </p>
+
+            <a href="transaksi.php">
+                 Lihat
             </a>
-        </div>
-
-    </div>
+      </div>
 
 </div>
 
