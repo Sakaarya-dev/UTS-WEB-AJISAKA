@@ -2,35 +2,39 @@
 session_start();
 include 'koneksi.php';
 
+if(isset($_SESSION['user'])){
+    header("Location: dashboard.php");
+    exit;
+}
+
+$error = '';
+
 if(isset($_POST['login'])){
+    // trim() berfungsi menghapus spasi tak sengaja di awal/akhir inputan
+    $username = trim(mysqli_real_escape_string($conn, $_POST['username']));
+    $password_input = $_POST['password']; 
+    
+    // Kita siapkan versi MD5-nya juga
+    $password_md5 = md5($password_input); 
 
-    $email = $_POST['email'];
-    $password = md5($_POST['password']);
-
-    $query = mysqli_query(
-        $conn,
-        "SELECT * FROM users
-        WHERE email='$email'
-        AND password='$password'"
-    );
-
-    $cek = mysqli_num_rows($query);
-
-    if($cek > 0){
-
+    // Jalankan query pencarian berdasarkan username ATAU email
+    $query = mysqli_query($conn, "SELECT * FROM users WHERE username='$username' OR email='$username'");
+    
+    if($query && mysqli_num_rows($query) >= 1){
         $data = mysqli_fetch_assoc($query);
-
-        $_SESSION['user'] = $data['username'];
-        $_SESSION['id'] = $data['id'];
-        $_SESSION['role'] = $data['role'];
         
-        header("Location: dashboard.php");
-        exit;
-
-    }else{
-
-        $error = "Email atau Password Salah!";
-
+        // Pengecekan Ganda: COCOKKAN dengan password biasa ATAU password MD5
+        if($password_input === $data['password'] || $password_md5 === $data['password']){
+            $_SESSION['id'] = $data['id']; // Ditambahkan agar fitur riwayat.php bisa berfungsi
+            $_SESSION['user'] = $data['username'];
+            $_SESSION['role'] = $data['role']; 
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            $error = 'ACCESS DENIED: Password yang Anda masukkan salah!';
+        }
+    } else {
+        $error = 'ACCESS DENIED: Akun (Username/Email) tidak ditemukan di database!';
     }
 }
 ?>
@@ -38,365 +42,91 @@ if(isset($_POST['login'])){
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
-    <title>Login Telur</title>
-    
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Saka Poultry</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/minty/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body{
-            font-family: 'Poppins', sans-serif;
-
-            height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            background:
-            linear-gradient(
-            rgba(0,0,0,0.5),
-            rgba(0,0,0,0.5)),
-
-            url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7');
-
+        body {
+            background: url('bg_ayam.png') no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-
-            overflow: hidden;
         }
-
-
-
-        .circle{
-            position: absolute;
-
-            border-radius: 50%;
-
-            background:
-            rgba(255,255,255,0.1);
-
-            animation: float 6s infinite ease-in-out;
-        }
-
-        .circle:nth-child(1){
-            width: 200px;
-            height: 200px;
-
-            top: 10%;
-            left: 10%;
-        }
-
-        .circle:nth-child(2){
-            width: 300px;
-            height: 300px;
-
-            bottom: 10%;
-            right: 10%;
-
-            animation-delay: 2s;
-        }
-
-        .circle:nth-child(3){
-            width: 150px;
-            height: 150px;
-
-            bottom: 20%;
-            left: 35%;
-
-            animation-delay: 4s;
-        }
-
-        @keyframes float{
-
-            0%,100%{
-                transform: translateY(0);
-            }
-
-            50%{
-                transform: translateY(-20px);
-            }
-
-        }
-
-        /* =========================
-           LOGIN BOX
-        ========================= */
-
-        .login-box{
-            position: relative;
-            z-index: 2;
-
-            width: 400px;
-
-            padding: 40px;
-
-            background:
-            rgba(255,255,255,0.12);
-
-            backdrop-filter: blur(15px);
-
-            border:
-            1px solid rgba(255,255,255,0.2);
-
-            border-radius: 25px;
-
-            box-shadow:
-            0 15px 35px rgba(0,0,0,0.3);
-
-            animation: fadeUp 1s ease;
-        }
-
-        @keyframes fadeUp{
-
-            from{
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to{
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-        }
-
-        
-        .logo{
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo i{
-            font-size: 70px;
-            color: #ffd166;
-
-            text-shadow:
-            0 0 20px rgba(255,209,102,0.7);
-        }
-
-        h2{
-            text-align: center;
-
-            color: white;
-
-            margin-bottom: 30px;
-
-            font-size: 30px;
-        }
-
-        
-        .error{
-            background:
-            rgba(255,0,0,0.2);
-
-            color: white;
-
-            padding: 12px;
-
-            border-radius: 12px;
-
-            text-align: center;
-
-            margin-bottom: 20px;
-        }
-
-
-        .input-box{
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .input-box i{
-            position: absolute;
-
-            left: 15px;
-            top: 15px;
-
-            color: #666;
-        }
-
-        .input-box input{
-            width: 100%;
-
-            padding: 14px 14px 14px 45px;
-
+        .login-card {
             border: none;
-            outline: none;
-
-            border-radius: 12px;
-
-            background:
-            rgba(255,255,255,0.9);
-
-            font-size: 15px;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
-
-        .input-box input:focus{
-            box-shadow:
-            0 0 10px rgba(255,255,255,0.8);
-        }
-
-       
-        button{
-            width: 100%;
-
-            padding: 14px;
-
-            border: none;
-
-            border-radius: 12px;
-
-            background:
-            linear-gradient(45deg,#6a994e,#386641);
-
-            color: white;
-
-            font-size: 17px;
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: 0.3s;
-        }
-
-        button:hover{
-            transform: translateY(-3px);
-
-            box-shadow:
-            0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        
-        .register{
+        .login-card .card-header {
+            background-color: transparent;
+            border-bottom: none;
+            padding-top: 2rem;
+            padding-bottom: 0;
             text-align: center;
-
-            margin-top: 20px;
-
-            color: white;
         }
-
-        .register a{
-            color: #ffd166;
-
-            text-decoration: none;
-
-            font-weight: bold;
+        .logo-icon {
+            font-size: 3rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
         }
-
-        .register a:hover{
-            text-decoration: underline;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media(max-width:500px){
-
-            .login-box{
-                width: 90%;
-                padding: 30px;
-            }
-
-            h2{
-                font-size: 24px;
-            }
-
-        }
-
     </style>
-
 </head>
-<body>
+<body class="d-flex align-items-center py-4 min-vh-100">
 
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card login-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-wheat-awn logo-icon"></i>
+                    <h3 class="mb-0 fw-bold">Masuk</h3>
+                    <p class="text-muted">Saka Poultry</p>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <?php if(!empty($error)): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i> <?php echo htmlspecialchars($error); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
 
-<div class="circle"></div>
-<div class="circle"></div>
-<div class="circle"></div>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Username atau Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-user text-muted"></i></span>
+                                <input type="text" name="username" class="form-control" placeholder="Masukkan Username / Email" required>
+                            </div>
+                        </div>
 
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" name="password" class="form-control" placeholder="Masukkan Password" required>
+                            </div>
+                        </div>
 
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="login" class="btn btn-primary py-2 fw-bold">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i> Login Sekarang
+                            </button>
+                        </div>
+                    </form>
 
-<div class="login-box">
-
-    <div class="logo">
-
-        <i class="fa-solid fa-wheat-awn"></i>
-
+                    <div class="text-center mt-4 pt-2 border-top">
+                        <p class="mb-0 text-muted small">Belum Punya Akun? <a href="register.php" class="text-primary text-decoration-none fw-bold">Register</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <h2>Login</h2>
-
-    <?php if(isset($error)){ ?>
-
-        <div class="error">
-            <?php echo $error; ?>
-        </div>
-
-    <?php } ?>
-
-    <form method="POST">
-
-        <div class="input-box">
-
-            <i class="fa-solid fa-envelope"></i>
-
-            <input
-            type="email"
-            name="email"
-            placeholder="Masukkan Email"
-            required>
-
-        </div>
-
-        <div class="input-box">
-
-            <i class="fa-solid fa-lock"></i>
-
-            <input
-            type="password"
-            name="password"
-            placeholder="Masukkan Password"
-            required>
-
-        </div>
-
-        <button type="submit" name="login">
-
-            <i class="fa-solid fa-right-to-bracket"></i>
-            Login Sekarang
-
-        </button>
-
-    </form>
-
-    <div class="register">
-
-        Ora Ndue Akun?
-
-        <a href="register.php">
-            Register
-        </a>
-
-    </div>
-
 </div>
 
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

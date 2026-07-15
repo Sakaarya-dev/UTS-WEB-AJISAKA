@@ -28,6 +28,7 @@ if(isset($_POST['update'])){
     $nama     = mysqli_real_escape_string($conn, $_POST['nama_telur']);
     $jenis    = mysqli_real_escape_string($conn, $_POST['jenis_telur']);
     $harga    = mysqli_real_escape_string($conn, $_POST['harga']);
+    $harga_modal = mysqli_real_escape_string($conn, $_POST['harga_modal']);
     $stok     = mysqli_real_escape_string($conn, $_POST['stok']);
     $supplier = mysqli_real_escape_string($conn, $_POST['supplier']);
 
@@ -91,6 +92,7 @@ if(isset($_POST['update'])){
     nama_telur='$nama',
     jenis_telur='$jenis',
     harga='$harga',
+    harga_modal='$harga_modal',
     stok='$stok',
     supplier='$supplier',
     gambar='$nama_gambar'
@@ -121,231 +123,105 @@ if(isset($_POST['update'])){
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>Edit Produk</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
-
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    font-family:'Poppins',sans-serif;
-
-    background:
-    linear-gradient(
-    rgba(0,0,0,0.55),
-    rgba(0,0,0,0.55)),
-
-    url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7');
-
-    background-size:cover;
-    background-position:center;
-
-    min-height:100vh;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:30px;
-}
-
-.card{
-
-    width:100%;
-    max-width:520px;
-
-    background:rgba(255,255,255,0.12);
-
-    backdrop-filter:blur(12px);
-
-    border-radius:25px;
-
-    padding:35px;
-
-    color:white;
-
-    box-shadow:
-    0 10px 30px rgba(0,0,0,0.3);
-}
-
-h1{
-    text-align:center;
-    margin-bottom:30px;
-}
-
-label{
-    display:block;
-    margin-bottom:8px;
-    margin-top:15px;
-    font-weight:600;
-}
-
-input{
-
-    width:100%;
-
-    padding:14px;
-
-    border:none;
-
-    border-radius:12px;
-
-    outline:none;
-
-    font-size:15px;
-}
-
-.gambar-preview{
-
-    width:120px;
-    height:120px;
-
-    object-fit:cover;
-
-    border-radius:15px;
-
-    margin-top:10px;
-
-    border:3px solid rgba(255,255,255,0.3);
-}
-
-.btn{
-
-    width:100%;
-
-    margin-top:25px;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:
-    linear-gradient(45deg,#fca311,#ff8800);
-
-    color:white;
-
-    font-size:16px;
-    font-weight:bold;
-
-    cursor:pointer;
-
-    transition:0.3s;
-}
-
-.btn:hover{
-    transform:translateY(-3px);
-}
-
-.kembali{
-
-    display:inline-block;
-
-    margin-top:20px;
-
-    color:white;
-
-    text-decoration:none;
-
-    font-weight:600;
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Produk - Saka Poultry</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/minty/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; }
+        .gambar-preview {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid #dee2e6;
+        }
+    </style>
 </head>
-<body>
+<body class="py-5">
 
-<div class="card">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark text-center py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-pen-to-square me-2"></i>Edit Produk Telur</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Nama Telur</label>
+                            <input type="text" name="nama_telur" class="form-control" value="<?php echo htmlspecialchars($data['nama_telur']); ?>" required>
+                        </div>
 
-    <h1>
-        <i class="fa-solid fa-pen-to-square"></i>
-        Edit Produk Telur
-    </h1>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Jenis Telur</label>
+                            <input type="text" name="jenis_telur" class="form-control" value="<?php echo htmlspecialchars($data['jenis_telur']); ?>" required>
+                        </div>
 
-    <form method="POST"
-    enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Harga Jual</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga" class="form-control" value="<?php echo htmlspecialchars($data['harga']); ?>" required>
+                            </div>
+                        </div>
 
-        <label>Nama Telur</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Harga Modal (Beli)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga_modal" class="form-control" value="<?php echo htmlspecialchars($data['harga_modal'] ?? 0); ?>" required>
+                            </div>
+                        </div>
 
-        <input type="text"
-        name="nama_telur"
-        value="<?php echo $data['nama_telur']; ?>"
-        required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Stok</label>
+                            <input type="number" name="stok" class="form-control" value="<?php echo htmlspecialchars($data['stok']); ?>" required>
+                        </div>
 
-        <label>Jenis Telur</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Supplier</label>
+                            <input type="text" name="supplier" class="form-control" value="<?php echo htmlspecialchars($data['supplier']); ?>" required>
+                        </div>
 
-        <input type="text"
-        name="jenis_telur"
-        value="<?php echo $data['jenis_telur']; ?>"
-        required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Gambar Saat Ini</label>
+                            <div>
+                                <?php if($data['gambar'] != ""){ ?>
+                                    <img src="gambar_produk/<?php echo htmlspecialchars($data['gambar']); ?>" class="gambar-preview mb-2">
+                                <?php } else { ?>
+                                    <p class="text-muted small">Tidak ada gambar</p>
+                                <?php } ?>
+                            </div>
+                        </div>
 
-        <label>Harga</label>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted">Upload Gambar Baru (Opsional)</label>
+                            <input type="file" name="gambar" accept="image/*" class="form-control">
+                        </div>
 
-        <input type="number"
-        name="harga"
-        value="<?php echo $data['harga']; ?>"
-        required>
-
-        <label>Stok</label>
-
-        <input type="number"
-        name="stok"
-        value="<?php echo $data['stok']; ?>"
-        required>
-
-        <label>Supplier</label>
-
-        <input type="text"
-        name="supplier"
-        value="<?php echo $data['supplier']; ?>"
-        required>
-
-        <label>Gambar Saat Ini</label>
-
-        <?php if($data['gambar'] != ""){ ?>
-
-            <img
-            src="gambar_produk/<?php echo $data['gambar']; ?>"
-            class="gambar-preview">
-
-        <?php } ?>
-
-        <label>Upload Gambar Baru</label>
-
-        <input type="file"
-        name="gambar">
-
-        <button type="submit"
-        name="update"
-        class="btn">
-
-            Update Data
-
-        </button>
-
-    </form>
-
-    <a href="data.php" class="kembali">
-        ← Kembali ke Data Produk
-    </a>
-
+                        <button type="submit" name="update" class="btn btn-warning w-100 fw-bold py-2">
+                            <i class="fa-solid fa-save me-1"></i> Update Data
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="data.php" class="text-decoration-none text-muted">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Data Produk
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

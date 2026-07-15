@@ -29,7 +29,9 @@ if(isset($_POST['submit'])){
     $nama  = mysqli_real_escape_string($conn, $_POST['nama_telur']);
     $jenis = mysqli_real_escape_string($conn, $_POST['jenis_telur']);
     $harga = mysqli_real_escape_string($conn, $_POST['harga']);
+    $harga_modal = mysqli_real_escape_string($conn, $_POST['harga_modal']);
     $stok  = mysqli_real_escape_string($conn, $_POST['stok']);
+    $supplier = mysqli_real_escape_string($conn, $_POST['supplier']);
 
     /* =========================
        UPLOAD GAMBAR
@@ -79,9 +81,9 @@ if(isset($_POST['submit'])){
 
     $query = mysqli_query($conn,
     "INSERT INTO produk
-    (nama_telur, jenis_telur, harga, stok, gambar)
+    (nama_telur, jenis_telur, harga, harga_modal, stok, supplier, gambar)
     VALUES
-    ('$nama','$jenis','$harga','$stok','$nama_gambar')");
+    ('$nama','$jenis','$harga','$harga_modal','$stok','$supplier','$nama_gambar')");
 
     if($query){
 
@@ -102,139 +104,86 @@ if(isset($_POST['submit'])){
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Tambah Produk</title>
-
+    <title>Tambah Produk - Saka Poultry</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/minty/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
-
-        body{
-            font-family: Arial, sans-serif;
-
-            background:
-            linear-gradient(
-            rgba(0,0,0,0.5),
-            rgba(0,0,0,0.5)),
-            url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7');
-
-            background-size:cover;
-            background-position:center;
-
-            min-height:100vh;
-
-            display:flex;
-            justify-content:center;
-            align-items:center;
-        }
-
-        .container{
-            width:450px;
-
-            background:rgba(255,255,255,0.12);
-
-            backdrop-filter:blur(10px);
-
-            padding:30px;
-
-            border-radius:20px;
-
-            color:white;
-        }
-
-        h2{
-            text-align:center;
-            margin-bottom:25px;
-        }
-
-        label{
-            display:block;
-            margin-bottom:8px;
-            font-weight:bold;
-        }
-
-        input{
-            width:100%;
-            padding:12px;
-
-            border:none;
-            border-radius:10px;
-
-            margin-bottom:20px;
-        }
-
-        button{
-            width:100%;
-            padding:14px;
-
-            border:none;
-            border-radius:10px;
-
-            background:#4CAF50;
-            color:white;
-
-            font-size:16px;
-            cursor:pointer;
-        }
-
-        button:hover{
-            background:#43a047;
-        }
-
-        .kembali{
-            display:block;
-            margin-top:15px;
-
-            text-align:center;
-            color:white;
-
-            text-decoration:none;
-        }
-
+        body { background-color: #f4f6f9; }
     </style>
-
 </head>
-<body>
+<body class="py-5">
 
 <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-square-plus me-2"></i>Tambah Produk</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Nama Telur</label>
+                            <input type="text" name="nama_telur" class="form-control" required>
+                        </div>
 
-    <h2>Tambah Produk</h2>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Jenis Telur</label>
+                            <input type="text" name="jenis_telur" class="form-control" required>
+                        </div>
 
-    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Harga Jual</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga" class="form-control" required>
+                            </div>
+                        </div>
 
-        <label>Nama Telur</label>
-        <input type="text" name="nama_telur" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Harga Modal (Beli)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga_modal" class="form-control" required>
+                            </div>
+                        </div>
 
-        <label>Jenis Telur</label>
-        <input type="text" name="jenis_telur" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Stok</label>
+                            <input type="number" name="stok" class="form-control" required>
+                        </div>
 
-        <label>Harga</label>
-        <input type="number" name="harga" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted">Supplier</label>
+                            <input type="text" name="supplier" class="form-control" required>
+                        </div>
 
-        <label>Stok</label>
-        <input type="number" name="stok" required>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted">Upload Gambar</label>
+                            <input type="file" name="gambar" accept="image/*" class="form-control" required>
+                        </div>
 
-        <label>Upload Gambar</label>
-        <input type="file" name="gambar" accept="image/*" required>
-
-        <button type="submit" name="submit">
-            Simpan Produk
-        </button>
-
-    </form>
-
-    <a href="dashboard.php" class="kembali">
-        ← Kembali ke Dashboard
-    </a>
-
+                        <button type="submit" name="submit" class="btn btn-success w-100 fw-bold py-2">
+                            <i class="fa-solid fa-save me-1"></i> Simpan Produk
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="dashboard.php" class="text-decoration-none text-muted">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
